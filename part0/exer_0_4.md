@@ -3,7 +3,7 @@ sequenceDiagram
     participant browser
     participant server
 
-    browser->>server: POST new_note https://studies.cs.helsinki.fi/exampleapp/new_note
+    browser->>server: POST new_note.json https://studies.cs.helsinki.fi/exampleapp/new_note
     activate server
     server-->>browser: Code 302 (URL redirect to https://studies.cs.helsinki.fi/exampleapp/notes)
     deactivate server
