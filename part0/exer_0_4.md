@@ -8,6 +8,8 @@ sequenceDiagram
     server-->>browser: Code 302 (URL redirect to https://studies.cs.helsinki.fi/exampleapp/notes)
     deactivate server
 
+    Note right of browser: The server commands the browser to reload the page
+
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
     server-->>browser: HTML document reload
