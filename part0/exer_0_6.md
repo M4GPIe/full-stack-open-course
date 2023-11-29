@@ -13,6 +13,6 @@ sequenceDiagram
 
     Note right of browser: The Browser sends the new note to the server so the changes done become persistent
 
-    Note left to server: The server updates its notes list
+    Note left of server: The server updates its notes list
 
 ```
