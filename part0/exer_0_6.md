@@ -11,6 +11,8 @@ sequenceDiagram
     activate server
     deactivate server
 
+    Note right of browser: The Browser sends the new note to the server so the changes done become persistent
 
+    Note left to server: The server updates its notes list
 
 ```
