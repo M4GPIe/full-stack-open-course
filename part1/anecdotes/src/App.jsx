@@ -1,18 +1,8 @@
 import { useState } from 'react'
+import Random_Button from './components/Random_Button'
+import Vote_Button from './components/Vote_Button'
 
-const Random_Button = (props)=>{
-  const {handleClick} = props
-  return(
-    <button onClick={handleClick}>Show Random Anecdote</button>
-  )
-}
 
-const Vote_Button = (props)=>{
-  const {handleClick} = props
-  return(
-    <button onClick={handleClick}>Vote</button>
-  )
-}
 
 function maxIndex(arr){
   console.log('function array', arr)
