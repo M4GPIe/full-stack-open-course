@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import DisplayPersons from './components/displayPersons'
 import SearchInput from './components/searchInput'
 import AddPersonForm from './components/AddPersonForm'
@@ -10,6 +11,18 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [search, setSearch] = useState('')
+
+  //fething data from local server with useEffect hook and axios promise
+  useEffect(() => {
+    console.log('effect')
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }, [])
+  console.log('render', persons.length, 'persons')
 
   //input event handlers
   const handleNameChange = (event) => {
@@ -29,14 +42,14 @@ const App = () => {
     event.preventDefault()
     if(persons.reduce((found,person)=>{return found||person.name==newName},false)){
       alert(`${newName} is already on the phonebook`)
-    }else if(persons.reduce((found,person)=>{return found||person.phone==newPhone},false)){
+    }else if(persons.reduce((found,person)=>{return found||person.number==newPhone},false)){
       alert('Phone already on the phonebook')
     }else if(newName==''||newPhone==''){
       alert('Please complete both person and phone number')
     }else{
       const personObject = {
         name: newName,
-        phone: newPhone,
+        number: newPhone,
         id: persons.length + 1
       }
       setPersons(persons.concat(personObject))
@@ -47,7 +60,6 @@ const App = () => {
   
   //displayed persons (filtered by search, case insensitive)
   const personsShown = persons.filter(person => person.name.toLowerCase().includes(search.toLowerCase()))
-  console.log(personsShown)
 
   return (
     <div>
