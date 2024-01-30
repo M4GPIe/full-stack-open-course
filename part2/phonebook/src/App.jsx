@@ -3,6 +3,7 @@ import phoneBookService from './services/dbService'
 import DisplayPersons from './components/displayPersons'
 import SearchInput from './components/searchInput'
 import AddPersonForm from './components/AddPersonForm'
+import Notification from './components/notification'
 
 const App = () => {
 
@@ -11,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [search, setSearch] = useState('')
+  const [notification, setNotification] = useState({text:'',type:''})
 
   //fething data from local server with useEffect hook, activated after every finished render
   useEffect(() => {
@@ -35,7 +37,7 @@ const App = () => {
   }
 
   //form submit handler
-  const addPerson = (event) => {
+  const submitHandler = (event) => {
     event.preventDefault()
     if(persons.reduce((found,person)=>{return found||person.name==newName},false)){
       //update an existing person's phone, make sure a new phone was typed
@@ -46,39 +48,42 @@ const App = () => {
     }else if(newName===''||newPhone===''){
       alert('Please complete both person and phone number')
     }else{
-      //person's id is asigned by the server
-      const personObject = {
-        name: newName,
-        number: newPhone
-      }
-      phoneBookService.create(personObject)
-        //service responds with the stored new person object
-        .then(newPerson =>{
-          setPersons(persons.concat(newPerson))
-          setNewName('')
-          setNewPhone('')
-        })
-        .catch(error=>alert(`Something wrong happened :(\nerror:${error}`))
+      addPerson()
     }
   }
 
   //update person function
   const updatePerson = (personId)=>{
+
     //check if there's any number typed and if the number doesn't already exists in phonebook
     if(newPhone!==''&&!persons.reduce((found,person)=>{return found||person.number==newPhone},false)){
+
       //find current person's object
       const oldPerson = persons.find(person=>person.id===personId)
+
       //show confirmation dialog
       if(confirm(`Do you wanna update ${oldPerson.name}'s number?`)){
+        
         //create updated person's object
         const updatedPerson = {...oldPerson, number: newPhone}
+
         //update in the server
         phoneBookService.update(personId,updatedPerson)
           .then(response=>{
             //update local persons list
-            setPersons(persons.map(person=> person.id === personId ? updatedPerson : person))
+            setPersons(persons.map(person=> person.id === personId ? response : person))
+
+            setNotification({text:`${response.name}'s phone updated to ${response.number}`,type:'update'})
+            setTimeout(() => {
+              setNotification({text:'',type:''})
+            }, 5000)
           })
-          .catch(error=>`Person could not be found in server\nerror:${error}`)
+          .catch(error=>{
+            setNotification({text:`Something wrong happened :( \n Error: ${error}`,type:'error'})
+            setTimeout(() => {
+              setNotification({text:'',type:''})
+            }, 5000)
+          })
       }
     }else if(newPhone===''){
       alert('Please complete both person and phone number')
@@ -96,10 +101,53 @@ const App = () => {
           //update local person list when deleted
           .then(response =>{
             setPersons(persons.filter(person => person.id!=personId))
+
+            console.log(response)
+
+            setNotification({text:`${response.name} deleted`,type:'success'})
+            setTimeout(() => {
+              setNotification({text:'',type:''})
+            }, 5000)
           })
-          .catch(error=>`Person not found in server\nerror:${error}`)
+          .catch(error=>{
+            setNotification({text:`Something wrong happened :(\nError: ${error}`,type:'error'})
+            setTimeout(() => {
+              setNotification({text:'',type:''})
+            }, 5000)
+          })
       }
     }
+  }
+
+  const addPerson = ()=>{
+
+    //person's id is asigned by the server
+    const personObject = {
+      name: newName,
+      number: newPhone
+    }
+
+    phoneBookService.create(personObject)
+      //service responds with the stored new person object
+      .then(newPerson =>{
+        setPersons(persons.concat(newPerson))
+        setNewName('')
+        setNewPhone('')
+        
+        //display success alert
+        setNotification({text:`${newPerson.name} added to the phonebook`,type:'success'})
+        //timout to hide success alert
+        setTimeout(() => {
+          setNotification({text:'',type:''})
+        }, 5000)
+      })
+      .catch(error=>{
+        setNotification({text:`Something wrong happened :(\nError: ${error}`,type:'error'})
+        setTimeout(() => {
+          setNotification({text:'',type:''})
+        }, 5000)
+      })
+
   }
   
   //displayed persons (filtered by search, case insensitive)
@@ -110,7 +158,8 @@ const App = () => {
       <h2>Phonebook</h2>
       <SearchInput value={search} onChange={handleSearchChange}/>
       <h3>Add New Person</h3>
-      <AddPersonForm onSubmit={addPerson} nameVal={newName} nameOnChange={handleNameChange} numberVal={newPhone} numberOnChange={handlePhoneChange}/>
+      <Notification message={notification.text} type={notification.type}/>
+      <AddPersonForm onSubmit={submitHandler} nameVal={newName} nameOnChange={handleNameChange} numberVal={newPhone} numberOnChange={handlePhoneChange}/>
       <h3>Numbers</h3>
       <DisplayPersons persons={personsShown} deletePerson={deletePerson}/>
     </div>
