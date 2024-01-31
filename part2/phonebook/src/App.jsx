@@ -20,7 +20,12 @@ const App = () => {
       //manage returned promise's fulfilled updating persons
       .then(persons=>setPersons(persons))
       //display alert dialog if rejected
-      .catch(error=>alert(`could not find server, please check url\nerror: ${error}`))
+      .catch(error=>{
+        setNotification({text:`Something wrong happened :( \n Error: ${error}`,type:'error'})
+        setTimeout(() => {
+          setNotification({text:'',type:''})
+        }, 5000)
+      })
   }, [])
 
   //input event handlers
