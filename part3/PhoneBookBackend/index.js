@@ -4,8 +4,13 @@ const cors = require('cors')
 
 //expressapp and input middlwares
 const app = express()
+
+//used so that the backend server also gives the hmtl frontend of the application
+app.use(express.static('dist'))
+
 app.use(express.json())
 app.use(cors())
+
 /*
 *for exercise 3.8 I made a console log of the post method's content
 *this is only with learning purposes since any sensitive information

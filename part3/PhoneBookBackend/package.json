@@ -6,11 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build:ui": "@powershell Remove-Item -Recurse -Force dist && cd ../../part2/phonebook && npm run build && @powershell Copy-Item dist -Recurse ../../part3/PhoneBookBackend",
+    "deploy": "fly deploy",
+    "deploy:full": "npm run build:ui && npm run deploy",
+    "logs:prod": "fly logs"
   },
   "author": "M4GPIe",
   "license": "ISC",
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.0",
     "nodemon": "^3.0.3"
   },
   "dependencies": {
