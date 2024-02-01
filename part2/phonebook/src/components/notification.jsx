@@ -18,7 +18,6 @@ const Notification = ({message,type})=>{
             style.color = 'blue'
         default:
     }
-    console.log(message===null)
     //display notificaton only when there's a message
     if (message === '') {
         return null

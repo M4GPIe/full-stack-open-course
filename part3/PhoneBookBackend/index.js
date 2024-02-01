@@ -1,10 +1,11 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 
 //expressapp and input middlwares
 const app = express()
 app.use(express.json())
-
+app.use(cors())
 /*
 *for exercise 3.8 I made a console log of the post method's content
 *this is only with learning purposes since any sensitive information
@@ -92,7 +93,7 @@ app.post('/api/persons', (request,response)=>{
     }
 
     //name has to be unique
-    if(persons.find(p=>p.name=body.name)){
+    if(persons.find(p=>p.name==body.name)){
         return response.status(400).json({error: "name has to be unique"})
     }
 
@@ -113,14 +114,10 @@ app.post('/api/persons', (request,response)=>{
 //update requests
 app.put('/api/persons/:id', (request,response)=>{
     let body = request.body
+    console.log(body)
     //check if there's any name and number in the body
     if(!body.name||!body.number){
         return response.status(400).json({error: "content missing"})
-    }
-
-    //name has to be unique
-    if(persons.find(p=>p.name=body.name)){
-        return response.status(400).json({error: "name has to be unique"})
     }
 
     //console.log(persons)
@@ -137,9 +134,13 @@ app.put('/api/persons/:id', (request,response)=>{
 //delete requests
 app.delete('/api/persons/:id', (request,response)=>{
     let id = Number(request.params.id)
-    persons = persons.filter(p=>p.id!==id)
-    //console.log(persons)
-    response.status(204).end()
+    let person = persons.find(p=>p.id===id)
+    if(person){
+        persons = persons.filter(p=>p.id!==id)
+        response.json(person)
+    }else{
+        response.status(404).json({error:"person not found"})
+    }
 })
 
 
@@ -150,7 +151,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
 console.log(`Server running on port ${PORT}`)
 })
