@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev":"nodemon index.js",
-    "start":"node index.js"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "author": "M4GPIe",
   "license": "ISC",
@@ -14,6 +14,7 @@
     "nodemon": "^3.0.3"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "morgan": "^1.10.0"
   }
 }

@@ -1,6 +1,33 @@
 const express = require('express')
+const morgan = require('morgan')
+
+//expressapp and input middlwares
 const app = express()
 app.use(express.json())
+
+/*
+*for exercise 3.8 I made a console log of the post method's content
+*this is only with learning purposes since any sensitive information
+*of the db should be logged
+*/
+morgan.token('body', function (req, res, method) { 
+    if(method=='POST'){
+        return JSON.stringify(req.body)
+    }else{
+        return ''
+    }
+})
+app.use(morgan((tokens, req, res)=>{
+
+    return [
+      tokens.method(req, res),
+      tokens.url(req, res),
+      tokens.status(req, res),
+      tokens.res(req, res, 'content-length'), '-',
+      tokens['response-time'](req, res), 'ms',
+      tokens.body(req,res,tokens.method(req,res))
+    ].join(' ')
+  }))
 
 //hardcoded example db
 let persons = [
@@ -114,6 +141,14 @@ app.delete('/api/persons/:id', (request,response)=>{
     //console.log(persons)
     response.status(204).end()
 })
+
+
+//output middlewares and app listen
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 const PORT = 3001
 app.listen(PORT, () => {
