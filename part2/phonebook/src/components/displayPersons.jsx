@@ -9,7 +9,7 @@ const DisplayPersons = ({persons,deletePerson})=>{
     <ul>
         {persons.map((person => 
             <li key={person.id}>
-                Name: {person.name}. Phone: {person.number} <DeleteButton onClickHandle={deletePerson(person.id)}/>
+                Name: {person.name}. Phone: {person.number} <DeleteButton onClickHandle={deletePerson(person.id,person.name)}/>
             </li>))}
     </ul>
     )

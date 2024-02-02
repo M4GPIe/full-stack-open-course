@@ -98,7 +98,7 @@ const App = () => {
   }
 
   //delete person's button onClickHandler
-  const deletePerson = (personId)=>{
+  const deletePerson = (personId,personName)=>{
     return ()=>{
       //show confirmation dialog
       if(confirm('Are you sure you want to delete this person?')){
@@ -107,9 +107,7 @@ const App = () => {
           .then(response =>{
             setPersons(persons.filter(person => person.id!=personId))
 
-            console.log(response)
-
-            setNotification({text:`${response.name} deleted`,type:'success'})
+            setNotification({text:`${personName} deleted`,type:'success'})
             setTimeout(() => {
               setNotification({text:'',type:''})
             }, 5000)

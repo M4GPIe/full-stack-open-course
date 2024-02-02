@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
 
 //expressapp and input middlwares
 const app = express()
@@ -35,59 +37,29 @@ app.use(morgan((tokens, req, res)=>{
     ].join(' ')
   }))
 
-//hardcoded example db
-let persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
-
 //get requests
 
-app.get('/', (request,response)=>{
-    response.send('<div><h1>PhoneBook DB</h1><p>Endpoints: "/api/persons"</p></div>')
-})
-
 app.get('/api/persons', (request,response)=>{
-    response.json(persons)
+    Person.find({})
+        .then(persons=>response.json(persons))
+        .catch(error=>next(error))
 })
 
 app.get('/api/persons/:id', (request,response)=>{
-    let id = Number(request.params.id)
-    let person = persons.find(note => note.id === id)
-    if(person){
-        response.json(person)
-    }else{
-        response.status(404).end()
-    }
+    Person.findById(request.params.id)
+        .then(person => {
+            if(person){//person found in DB
+                response.json(person)
+            }else{//person not found ->404
+                response.status(404).end()
+            }
+        })
+        //error fetching from DB
+        .catch(error=>next(error))
 })
 
 
 //post requests
-
-const generateId = ()=>{
-    const maxId = persons.length > 0
-      ? Math.max(...persons.map(p => p.id))
-      : 0
-    return maxId + 1
-}
 
 app.post('/api/persons', (request,response)=>{
     let body = request.body
@@ -97,66 +69,77 @@ app.post('/api/persons', (request,response)=>{
         return response.status(400).json({error: "content missing"})
     }
 
-    //name has to be unique
-    if(persons.find(p=>p.name==body.name)){
-        return response.status(400).json({error: "name has to be unique"})
-    }
+    let person = new Person({
+        name : body.name,
+        number : body.number
+    })
 
-    //console.log(persons)
-
-    let person = {
-        "id" : generateId(),
-        "name" : body.name,
-        "number" : body.number
-    }
-
-    persons = persons.concat(person)
-    //console.log(persons)
-
-    response.json(person)
+    person.save()
+        .then(savedPerson=>response.send(savedPerson))
+        .catch(error=>next(error))
 })
 
 //update requests
 app.put('/api/persons/:id', (request,response)=>{
     let body = request.body
-    console.log(body)
+
     //check if there's any name and number in the body
     if(!body.name||!body.number){
         return response.status(400).json({error: "content missing"})
     }
 
-    //console.log(persons)
     let person = {
-        "id" : Number(request.params.id),
-        "name" : body.name,
-        "number" : body.number
+        name : body.name,
+        number : body.number
     }
-    persons = persons.map(p=>p.id!==person.id ? p : person)
-    //console.log(persons)
-    response.json(person)
+
+    //to pass directly the updated object we added the {new:true} param
+    Person.findByIdAndUpdate(request.params.id, person, {new:true})
+        .then(personUpdated => {
+            if(personUpdated){
+                response.json(personUpdated)
+            }else{
+                response.status(404).end()
+            }
+        })
+        .catch(error=>next(error))
 })
 
 //delete requests
 app.delete('/api/persons/:id', (request,response)=>{
-    let id = Number(request.params.id)
-    let person = persons.find(p=>p.id===id)
-    if(person){
-        persons = persons.filter(p=>p.id!==id)
-        response.json(person)
-    }else{
-        response.status(404).json({error:"person not found"})
-    }
+    Person.findByIdAndDelete(request.params.id)
+        .then(result => response.status(204).end()) //return code 204 when no DB errors, even if there wasn't found any object
+        .catch(error=>next(error))
 })
 
 
-//output middlewares and app listen
+//Error middlewares
+
+//unknown endopoint
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
 
+//error handler middleware
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    //if the error is a malformed object id
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+    
+    //else use the default error handling from express
+    next(error)
+}
+
+app.use(errorHandler)
+
+
+//app listen from env variable or default 3001
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-console.log(`Server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT}`)
 })
