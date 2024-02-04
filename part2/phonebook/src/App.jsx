@@ -84,7 +84,7 @@ const App = () => {
             }, 5000)
           })
           .catch(error=>{
-            setNotification({text:`Something wrong happened :( \n Error: ${error}`,type:'error'})
+            setNotification({text:`Something wrong happened :( \n Error: ${error.response.data.error}`,type:'error'})
             setTimeout(() => {
               setNotification({text:'',type:''})
             }, 5000)
@@ -113,7 +113,7 @@ const App = () => {
             }, 5000)
           })
           .catch(error=>{
-            setNotification({text:`Something wrong happened :(\nError: ${error}`,type:'error'})
+            setNotification({text:`Something wrong happened :(\nError: ${error.response.data.error}`,type:'error'})
             setTimeout(() => {
               setNotification({text:'',type:''})
             }, 5000)
@@ -145,7 +145,7 @@ const App = () => {
         }, 5000)
       })
       .catch(error=>{
-        setNotification({text:`Something wrong happened :(\nError: ${error}`,type:'error'})
+        setNotification({text:`Something wrong happened :(\nError: ${error.response.data.error}`,type:'error'})
         setTimeout(() => {
           setNotification({text:'',type:''})
         }, 5000)

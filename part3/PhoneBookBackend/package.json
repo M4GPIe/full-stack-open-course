@@ -10,12 +10,16 @@
     "build:ui": "@powershell Remove-Item -Recurse -Force dist && cd ../../part2/phonebook && npm run build && @powershell Copy-Item dist -Recurse ../../part3/PhoneBookBackend",
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
-    "logs:prod": "fly logs"
+    "logs:prod": "fly logs",
+    "open:prod": "fly open",
+    "scale:prod": "fly scale show",
+    "lint" : "eslint ."
   },
   "author": "M4GPIe",
   "license": "ISC",
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.0",
+    "eslint": "^8.56.0",
     "nodemon": "^3.0.3"
   },
   "dependencies": {
