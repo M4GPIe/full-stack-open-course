@@ -1,9 +1,21 @@
-# full-stack-open-course
-Submitted exercises from Full Stack Open course by the University of Helsinki
+# Full-Stack open course
 ## Quick sum up
-
+This project contains the different parts and exercises developed during the Open University's fullstack course.
 ## Technologies
-
+The basic project structure learnt during the course is based on the MERN pattern:
+- MongoDB
+- Express
+- React
+- NodeJS
+  
+Also, during development, other libraries and technologies have been used as well as other tools based on the previous technologies. A few of them are:
+- Node Package Manager (npm)
+- Fly.io deploy tools
+- Docker
+- MongoDB Atlas
+- Mongoose
+- Dotenv
+- Morgan logging tools
 ## Parts
 ### Part 0
 
