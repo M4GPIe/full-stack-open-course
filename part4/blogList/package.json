@@ -1,0 +1,20 @@
+{
+  "name": "bloglist",
+  "version": "1.0.0",
+  "description": "Refactoring a given application that displays blog lists",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.1",
+    "mongoose": "^7.6.5"
+  }
+}
