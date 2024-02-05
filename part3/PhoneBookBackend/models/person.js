@@ -1,19 +1,5 @@
 const mongoose = require('mongoose')
-require('dotenv').config({ path: '../.env' })
-
-mongoose.set('strictQuery',false)
-
-//take the URI from .env
-const DB_URI = process.env.MONGODB_URI
-
-//connecto to DB with mongoose and URI
-mongoose.connect(DB_URI)
-	.then(() => {
-		console.log('connected to MongoDB')
-	})
-	.catch((error) => {
-		console.log('error connecting to MongoDB:', error.message)
-	})
+const logger = require('../utils/logger')
 
 //person schema
 const personSchema = new mongoose.Schema({

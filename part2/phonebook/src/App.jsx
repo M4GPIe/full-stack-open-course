@@ -104,7 +104,7 @@ const App = () => {
       if(confirm('Are you sure you want to delete this person?')){
         phoneBookService.remove(personId)
           //update local person list when deleted
-          .then(response =>{
+          .then(() =>{
             setPersons(persons.filter(person => person.id!=personId))
 
             setNotification({text:`${personName} deleted`,type:'success'})
