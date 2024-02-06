@@ -4,13 +4,13 @@ const Person = require('../models/person')
 
 //get requests
 
-notesRouter.get('/', (request,response,next)=>{
+notesRouter.get('/', (request,response)=>{
 	Person.find({})
 		.then(persons=>response.json(persons))
 		.catch(error=>next(error))
 })
 
-notesRouter.get('/:id', (request,response,next)=>{
+notesRouter.get('/:id', (request,response)=>{
 	Person.findById(request.params.id)
 		.then(person => {
 			if(person){//person found in DB
@@ -26,7 +26,7 @@ notesRouter.get('/:id', (request,response,next)=>{
 
 //post requests
 
-notesRouter.post('/', (request,response,next)=>{
+notesRouter.post('/', (request,response)=>{
 	let body = request.body
 
 	//check if there's any name and number in the body
@@ -45,7 +45,7 @@ notesRouter.post('/', (request,response,next)=>{
 })
 
 //update requests
-notesRouter.put('/:id', (request,response,next)=>{
+notesRouter.put('/:id', (request,response)=>{
 	let body = request.body
 
 	//check if there's any name and number in the body
@@ -72,7 +72,7 @@ notesRouter.put('/:id', (request,response,next)=>{
 })
 
 //delete requests
-notesRouter.delete('/:id', (request,response,next)=>{
+notesRouter.delete('/:id', (request,response)=>{
 	Person.findByIdAndDelete(request.params.id)
 		.then(() => response.status(204).end()) //return code 204 when no DB errors, even if there wasn't found any object
 		.catch(error=>next(error))

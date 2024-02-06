@@ -1,4 +1,6 @@
+require('dotenv').config()
 const express = require('express')
+require('express-async-errors')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
@@ -13,7 +15,9 @@ mongoose.connect(mongoUrl)
 
 app.use(cors())
 app.use(express.json())
-app.use(middleware.requestLogger)
+
+//avoid logging middleware when running tests
+if(process.env.NODE_ENV !=='test') app.use(middleware.requestLogger)
 
 //route handlinng
 app.use('/api/blogs',blogsRouter)
