@@ -10,12 +10,13 @@ The basic project structure learnt during the course is based on the MERN patter
   
 Also, during development, other libraries and technologies have been used as well as other tools based on the previous technologies. A few of them are:
 - Node Package Manager (npm)
+- EsLint
 - Fly.io deploy tools
 - Docker
 - MongoDB Atlas
 - Mongoose
 - Dotenv
-- Morgan logging tools
+- Morgan logger
 ## Parts
 ### Part 0
 
