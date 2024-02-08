@@ -6,9 +6,8 @@ const cors = require('cors')
 const mongoose = require('mongoose')
 const middleware = require('./utils/middleware')
 const config = require('./utils/config')
-const logger = require('./utils/logger')
-const Blog = require('./models/blog')
 const blogsRouter = require('./controllers/blogs')
+const usersRouter = require('./controllers/users')
 
 const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl)
@@ -19,8 +18,11 @@ app.use(express.json())
 //avoid logging middleware when running tests
 if(process.env.NODE_ENV !=='test') app.use(middleware.requestLogger)
 
-//route handlinng
+//blogs route handling
 app.use('/api/blogs',blogsRouter)
+
+//users route handling
+app.use('/api/users',usersRouter)
 
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
