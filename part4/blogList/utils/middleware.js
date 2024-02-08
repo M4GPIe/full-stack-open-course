@@ -18,6 +18,8 @@ const errorHandler = (error, request, response, next) => {
 		return response.status(400).json({ error: 'malformatted id' })
 	}else if(error.name === 'ValidationError'){//validation errors sent by DB
 		return response.status(400).json({error: error.message})
+	}else if(error.name === 'JsonWebTokenError'){//invalid token decoding
+		return response.status(401).json({ error: 'token invalid' })
 	}
     
 	//use the default error handling from express for other errors

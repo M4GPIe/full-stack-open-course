@@ -1,7 +1,19 @@
+require('dotenv').config()
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jwt = require('jsonwebtoken')
 
+const getRequestToken = (request)=>{
+    //authorization header
+    const authorization = request.get('authorization')
+    if(authorization&&authorization.startsWith('Bearer')){
+        //return only the token without the bearer tag
+        return authorization.replace('Bearer ', '')
+    }else{
+        return null
+    }
+}
 //route handling
 //rejected promises will be handled by express-async-errors
 blogsRouter.get('/', async (request, response) => {
@@ -20,10 +32,22 @@ blogsRouter.get('/:id', async (request,response)=>{
 })
 
 blogsRouter.post('/', async (request, response) => {
+
+    /*Check if the request is authorized with the proper token*/
     const body = request.body
+    const token = getRequestToken(request)
+    
+    //get and decode the token, if it's an invalid token a JsonWebTokenError will be launched
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    
+    if (!(decodedToken && decodedToken.id)) {//check if the token has been decoded correctly
+        return response.status(401).json({ error: 'token invalid' })
+    }
+
+    /*Create the new Blog */
 
     //find the user's object in DB
-    const user = await User.findById(body.userId)
+    const user = await User.findOne({userName :decodedToken.userName})
 
     const blog = new Blog({
         title : body.title,
