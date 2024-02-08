@@ -4,16 +4,6 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 
-const getRequestToken = (request)=>{
-    //authorization header
-    const authorization = request.get('authorization')
-    if(authorization&&authorization.startsWith('Bearer')){
-        //return only the token without the bearer tag
-        return authorization.replace('Bearer ', '')
-    }else{
-        return null
-    }
-}
 //route handling
 //rejected promises will be handled by express-async-errors
 blogsRouter.get('/', async (request, response) => {
@@ -33,21 +23,17 @@ blogsRouter.get('/:id', async (request,response)=>{
 
 blogsRouter.post('/', async (request, response) => {
 
-    /*Check if the request is authorized with the proper token*/
+    //the user is extracted by the extractToken middleware, that decodes the token (if given) and extracts the user
     const body = request.body
-    const token = getRequestToken(request)
-    
-    //get and decode the token, if it's an invalid token a JsonWebTokenError will be launched
-    const decodedToken = jwt.verify(token, process.env.SECRET)
-    
-    if (!(decodedToken && decodedToken.id)) {//check if the token has been decoded correctly
-        return response.status(401).json({ error: 'token invalid' })
-    }
+    const requestUser = request.user
 
+    if(!requestUser){
+        return response.status(401).json({ error: 'invalid authorization' })
+    }
     /*Create the new Blog */
 
     //find the user's object in DB
-    const user = await User.findOne({userName :decodedToken.userName})
+    const user = await User.findOne({userName : requestUser})
 
     const blog = new Blog({
         title : body.title,
@@ -67,6 +53,24 @@ blogsRouter.post('/', async (request, response) => {
 })
 
 blogsRouter.delete('/:id', async(request,response)=>{
+
+    //user extracted from decoded token in tokenExtractor middleware
+    const requestUser = request.user
+
+    //if no token was given, invalid authorization
+    if(!requestUser){
+        return response.status(401).json({ error: 'invalid authorization' })
+    }
+
+    //check if the token given matches the blog's owner
+    const blog = await Blog.findOne({_id : request.params.id})
+    const user = await User.findOne({userName : requestUser}) 
+
+    if (user._id.toString() !== blog.author.toString()) {
+        return response.status(401).json({ error: 'user is not the owner of this blog' })
+    }
+
+    //delete blog
     await Blog.findByIdAndDelete(request.params.id)
     response.status(204).end()
 })

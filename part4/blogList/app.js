@@ -19,8 +19,8 @@ app.use(express.json())
 //avoid logging middleware when running tests
 if(process.env.NODE_ENV !=='test') app.use(middleware.requestLogger)
 
-//blogs route handling
-app.use('/api/blogs',blogsRouter)
+//blogs route handling, use the token extractor to check authorization
+app.use('/api/blogs',middleware.tokenExtractor,blogsRouter)
 
 //users route handling
 app.use('/api/users',usersRouter)

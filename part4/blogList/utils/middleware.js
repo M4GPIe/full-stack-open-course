@@ -1,5 +1,6 @@
 const morgan = require('morgan')
 const logger = require('./logger')
+const jwt = require('jsonwebtoken')
 
 //morgan logger
 const requestLogger = morgan('common')
@@ -26,9 +27,32 @@ const errorHandler = (error, request, response, next) => {
 	next(error)
 }
 
+//extract token from header middleware
+const tokenExtractor = (request,response,next)=>{
+    //authorization header
+    const authorization = request.get('authorization')
+
+    if(authorization&&authorization.startsWith('Bearer')){
+		//quit the Bearer tag, decode the token
+		const decodedToken = jwt.verify(authorization.replace('Bearer ', ''),process.env.SECRET)
+		
+		if (!(decodedToken && decodedToken.id)) {//check if the token has been decoded correctly
+			return response.status(401).json({ error: 'token invalid' })
+		}
+
+		request.user = decodedToken.userName 
+
+    }else{//no token given, for example in get requests
+		request.user = null
+    }
+
+	next()
+}
+
 
 module.exports = {
     requestLogger,
     unknownEndpoint,
-    errorHandler
+    errorHandler,
+	tokenExtractor
 }
