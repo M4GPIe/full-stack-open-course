@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken')
 //route handling
 //rejected promises will be handled by express-async-errors
 blogsRouter.get('/', async (request, response) => {
-    let blogs = await Blog.find({}).populate('author',{userName:1,name:1,_id:1} )
+    let blogs = await Blog.find({}).populate('author',{userName:1} )
     response.json(blogs)
 })
 
