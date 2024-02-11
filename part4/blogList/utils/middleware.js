@@ -13,7 +13,7 @@ const unknownEndpoint = (request, response) => {
 //error handler middleware
 const errorHandler = (error, request, response, next) => {
 	logger.error(error.message)
-
+	
 	//the return param avoids running the express default error handling after managing the identified errors
 	if (error.name === 'CastError') {//error is caused by a malformed object id
 		return response.status(400).json({ error: 'malformatted id' })

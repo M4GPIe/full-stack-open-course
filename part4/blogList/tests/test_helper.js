@@ -3,10 +3,8 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 
 /*
-*the following author values contain the userName of the author as we need first to
-*save the users in DB to know their generated id
-*in blog_api.test we will first save the users and then replace the author with the
-*proper id corresponding to that user
+* the following author values contain the userName of the author but should have the author's generated id
+* after generating the user's object, we will replace the author's name with its user object's id
 */
 
 const initialBlogs = [

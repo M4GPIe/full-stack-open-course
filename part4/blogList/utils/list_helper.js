@@ -81,10 +81,15 @@ const mostLikes = (blogs)=>{
     }
 }
 
+const  generateRandomIndex = (length) => {
+    return parseInt(Math.random()*(length-1))
+}
+
 module.exports = {
     dummy,
     totalLikes,
     favoriteBlog,
     mostBlogs,
-    mostLikes
+    mostLikes,
+    generateRandomIndex
 }
