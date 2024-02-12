@@ -13,14 +13,12 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState({text:'',type:''})
 
-  console.log(blogs)
-
   //fetch data from server
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs( blogs.sort((a,b)=>b.likes-a.likes) )
     )  
-  }, [blogs.length])
+  }, [blogs.length,blogs.reduce((s,b)=>s+b.likes,0)])   //any time you add or like a blog
 
   //check if there's an active sesion
   useEffect(() => {
@@ -78,6 +76,45 @@ const App = () => {
     }
   }
 
+  //addLike
+  const addLike = async(blog)=>{
+    try{
+      const updatedBlog = {...blog, likes: blog.likes+1}
+      await blogService.updateBlog(updatedBlog)
+      blog.likes++
+      setNotification({text:`You liked "${blog.title}"`,type:'success'})
+        setTimeout(() => {
+          setNotification({text:'',type:''})
+        }, 5000)
+    }catch (error){
+      setNotification({text:`Something wrong happened :(\nError: ${error.response.data.error}`,type:'error'})
+        setTimeout(() => {
+          setNotification({text:'',type:''})
+        }, 5000)
+    }
+  }
+
+  //removeBlog
+  const deleteBlog = async(blog)=>{
+    try{
+      if(window.confirm(`Are you sure you want to delete ${blog.title}?`)){
+        await blogService.removeBlog(blog.id)
+        setBlogs(blogs.filter(b=>b.id!==blog.id))
+
+        setNotification({text:`Deleted "${blog.title}"`,type:'success'})
+        setTimeout(() => {
+          setNotification({text:'',type:''})
+        }, 5000)
+      }
+    }catch(error){
+      console.log(error)
+      setNotification({text:`Something wrong happened :(\nError: ${error.response.data.error}`,type:'error'})
+        setTimeout(() => {
+          setNotification({text:'',type:''})
+        }, 5000)
+    }
+  }
+
   //logout handler
   const logout = ()=>{
     window.localStorage.removeItem('loggedUser')
@@ -103,14 +140,14 @@ const App = () => {
     <div>
       <Notification message={notification.text} type={notification.type}/>
       <h1>BlogList</h1>
-      <p>User: {user.userName}</p>
+      <h3>User: {user.userName}</h3>
       <Togglable buttonLabel = {'Create new Blog'}>
         <h2>Create new Blog:</h2>
         <AddBlogs createBlog={createBlog}/>
       </Togglable>
       <h2>blogs</h2>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} addLike={addLike} deleteBlog={deleteBlog}/>
       )}
       <Logout onClick={logout}/>
     </div>

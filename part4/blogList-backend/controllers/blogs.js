@@ -77,7 +77,15 @@ blogsRouter.delete('/:id', async(request,response)=>{
 
 blogsRouter.put('/:id', async(request,response)=>{
     let newBlog = new Blog(request.body)
-    let updatedBlog = await Blog.findByIdAndUpdate(request.params.id,newBlog,{new:true, runValidators : true, context : 'query'})
+    
+    let updated = {
+        title : newBlog.title,
+        author : newBlog.author,
+        likes : newBlog.likes,
+        url : newBlog.url
+    }
+
+    let updatedBlog = await Blog.findByIdAndUpdate(request.params.id,updated,{new:true, runValidators : true, context : 'query'})
     if(updatedBlog){
         response.json(updatedBlog)
     }else{
