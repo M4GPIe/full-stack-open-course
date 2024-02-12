@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -6,22 +6,21 @@ import LoginForm from './components/LoginForm'
 import Logout from './components/Logout'
 import AddBlogs from './components/AddBlogs'
 import Notification from './components/notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [userName, setUserName] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [url, setUrl] = useState('')
-  const [title, setTitle] = useState('')
   const [notification, setNotification] = useState({text:'',type:''})
+
+  console.log(blogs)
 
   //fetch data from server
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
     )  
-  }, [])
+  }, [blogs.length])
 
   //check if there's an active sesion
   useEffect(() => {
@@ -33,23 +32,19 @@ const App = () => {
     }
   }, [])
 
-  //login form handlers
-  const login = async (event)=>{
-    event.preventDefault()
+  //login function
+  const login = async (credentials)=>{
     try{
-      const user = await loginService.login({userName, password})
-      
+      const user = await loginService.login(credentials)
       setUser(user)
-      setUserName('')
-      setPassword('')
       
       window.localStorage.setItem('loggedUser',JSON.stringify(user))
       blogService.setToken(user.token)
 
       setNotification({text:`Logged in as ${user.userName}`,type:'update'})
-        setTimeout(() => {
-          setNotification({text:'',type:''})
-        }, 5000)
+      setTimeout(() => {
+        setNotification({text:'',type:''})
+      }, 5000)
     }catch (error){
       setNotification({text:`Bad login credentials \n Error: ${error.response.data.error}`,type:'error'})
         setTimeout(() => {
@@ -58,17 +53,8 @@ const App = () => {
     }
   }
 
-  const handleUserNameChange = ({target})=>setUserName(target.value)
-
-  const handlePasswordChange = ({target})=>setPassword(target.value)
-
   //add blogs handler
-  const handleUrlChange = ({target})=>setUrl(target.value)
-
-  const handleTitleChange = ({target})=>setTitle(target.value)
-
-  const createBlog = async(event)=>{
-    event.preventDefault()
+  const createBlog = async(url,title)=>{
     try{
       const newBlog = {
         title : title,
@@ -79,8 +65,6 @@ const App = () => {
 
       const saved = await blogService.createBlog(newBlog)
       setBlogs(blogs.concat(saved))
-      setUrl('')
-      setTitle('')
 
       setNotification({text:`New blog added`,type:'success'})
         setTimeout(() => {
@@ -110,7 +94,7 @@ const App = () => {
       <div>
         <Notification message={notification.text} type={notification.type}/>
         <h2>Log in to application</h2>
-        <LoginForm userName={userName} handleUserNameChange={handleUserNameChange} password={password} handlePasswordChange={handlePasswordChange} onSubmit={login}/>
+        <LoginForm loginFunction = {login}/>
       </div>
     )
   }
@@ -118,8 +102,12 @@ const App = () => {
   return (
     <div>
       <Notification message={notification.text} type={notification.type}/>
-      <h2>User: {user.userName}</h2>
-      <AddBlogs title={title} handleTitleChange={handleTitleChange} url = {url} handleUrlChange={handleUrlChange} onSubmit={createBlog}/>
+      <h1>BlogList</h1>
+      <p>User: {user.userName}</p>
+      <Togglable buttonLabel = {'Create new Blog'}>
+        <h2>Create new Blog:</h2>
+        <AddBlogs createBlog={createBlog}/>
+      </Togglable>
       <h2>blogs</h2>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
