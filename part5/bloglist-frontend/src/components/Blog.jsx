@@ -1,4 +1,5 @@
 import { useState } from "react"
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, addLike, deleteBlog }) => {
 
@@ -49,6 +50,12 @@ const Blog = ({ blog, addLike, deleteBlog }) => {
         <button onClick={toggleExpand}>Hide details</button>
     </div>  
   )
+}
+
+Blog.PropTypes = {
+  blog: PropTypes.object.isRequired,
+  addLike: PropTypes.func.isRequired,
+  deleteBlog: PropTypes.func.isRequired
 }
 
 export default Blog
