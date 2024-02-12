@@ -29,7 +29,7 @@ const Blog = ({ blog, addLike, deleteBlog }) => {
     return(
       <div style={blogStyle}>
       <h3>{blog.title} - {blog.author.userName}</h3>
-      <button onClick={toggleExpand}>See more info</button>
+      <button id="ExpandButton" onClick={toggleExpand}>See more info</button>
       </div>  
     )
   }
@@ -44,7 +44,7 @@ const Blog = ({ blog, addLike, deleteBlog }) => {
         </p>
         <div>
           Likes: {blog.likes}
-          <button onClick={likeOnClick}>Like</button>
+          <button id="LikeButton" onClick={likeOnClick}>Like</button>
         </div>
         <button onClick={deleteOnClick}>Delete</button>
         <button onClick={toggleExpand}>Hide details</button>
@@ -52,7 +52,7 @@ const Blog = ({ blog, addLike, deleteBlog }) => {
   )
 }
 
-Blog.PropTypes = {
+Blog.propTypes = {
   blog: PropTypes.object.isRequired,
   addLike: PropTypes.func.isRequired,
   deleteBlog: PropTypes.func.isRequired
