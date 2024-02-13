@@ -20,13 +20,13 @@ const AddBlogs = ({createBlog})=>{
     return(
         <form onSubmit={onSubmit}>
             <div>
-                Title: <input value={title} onChange={handleTitleChange} />
+                Title: <input id='TitleInput' value={title} onChange={handleTitleChange} />
             </div>
             <div>
-                URL: <input value={url} onChange={handleUrlChange} />
+                URL: <input id='UrlInput' value={url} onChange={handleUrlChange} />
             </div>
             <div>
-                <button type="submit">Create Blog</button>
+                <button id='SubmitButton' type="submit">Create Blog</button>
             </div>
         </form>
     )
