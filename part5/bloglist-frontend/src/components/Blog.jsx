@@ -27,7 +27,7 @@ const Blog = ({ blog, addLike, deleteBlog }) => {
 
   if(!expand){
     return(
-      <div style={blogStyle}>
+      <div className="blog" style={blogStyle}>
       <h3>{blog.title} - {blog.author.userName}</h3>
       <button id="ExpandButton" onClick={toggleExpand}>See more info</button>
       </div>  

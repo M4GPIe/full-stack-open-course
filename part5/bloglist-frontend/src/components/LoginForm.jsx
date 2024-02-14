@@ -23,13 +23,13 @@ const Login = ({loginFunction})=>{
     return(
         <form onSubmit={onSubmit}>
             <div>
-                userName: <input value={userName} onChange={handleUserNameChange}/>
+                userName: <input id="userNameInput" value={userName} onChange={handleUserNameChange}/>
             </div>
             <div>
-                password: <input value={password} onChange={handlePasswordChange}/>
+                password: <input id="passwordInput" value={password} onChange={handlePasswordChange}/>
             </div>
             <div>
-                <button type="submit">Log in</button>
+                <button id="loginSubmitButton" type="submit">Log in</button>
             </div>
         </form>
     )
