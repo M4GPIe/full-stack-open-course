@@ -1,0 +1,7 @@
+/*tsconfig.json file is used to define how the TypeScript compiler should interpret the code, 
+how strictly the compiler should work, which files to watch or ignore*/
+{
+    "compilerOptions":{
+      "noImplicitAny": false    //
+    }
+}
